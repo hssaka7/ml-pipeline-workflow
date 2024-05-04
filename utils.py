@@ -22,11 +22,11 @@ def parse_config(config_path):
     return config or None
 
 
-def create_workspace_folder(workspace_path, delete = False):
+def create_workspace_folder(workspace_path, delete_if_exist = False):
 
     if os.path.exists(workspace_path):
         print("the workspace directory already exist.")
-        if delete:
+        if delete_if_exist:
             print("Deleting and creating agian")
             os.rmdir(workspace_path)
             os.mkdir(workspace_path)  
@@ -37,3 +37,6 @@ def create_workspace_folder(workspace_path, delete = False):
     return True
 
   
+def write_file(file_path, content):
+    with open(file_path, 'w') as file:
+            file.write(content)

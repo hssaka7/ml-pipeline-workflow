@@ -13,37 +13,52 @@ WORKSPACE = '/Users/aakashbasnet/development/python/workspace/ml_pipelines'
 
 # manager run 
 class Manager:
-    def __init__(self, steps, workspace_path):
+    def __init__(self, step_config, workspace_path):
+        
         id = uuid.uuid4()
-        self.steps = steps
+        
         self.workspace = f"{workspace_path}/{id}"
-        create_workspace_folder(self.workspace)
-    
+        
+        # creates folders with uniqiue id for each run inside the pipeline folder
+        create_workspace_folder(self.workspace, delete_if_exist=False)
+        
+        self.step_config = step_config
+        self.steps = self.get_steps()
+
+
     def run(self):
         results = dict()
-        for step in self.steps:
+        for count, step in enumerate(self.steps):
+
+            if count == 0 and step.depends != []:
+                raise Exception("First step should not have any dependency")
+            
+            # creates folder with the step name inside the unique id folder 
             step_workspace = f"{self.workspace}/{step.name}"
-            create_workspace_folder(step_workspace, delete = True)
-            print(step.name)
-            step.run()
+            create_workspace_folder(step_workspace, delete_if_exist = True)
+            step.workspace = step_workspace
+
+            if step.depends != []:
+                step.inputs = [results[x] for x in step.depends]
+            results[step.name] =  step.run()
             # save the returned results
             # set the input for the next object
 
 
-def get_steps(p_config):
-    
-    # TODO create dependency graph
-    step_objs = []
-    for step in p_config:
+    def get_steps(self):
+        
+        # TODO create dependency graph
+        step_objs = []
+        for step in self.step_config:
 
-        _folder, _file, _step = step['class_name'].split('.')
-        mod = __import__(f"core.{_folder}.{_file}")
-        mod = getattr(mod, _folder)
-        mod = getattr(mod, _file)
-        mod = getattr(mod, _step)
-        obj = mod(**step)
-        step_objs.append(obj)
-    return step_objs
+            _folder, _file, _step = step['class_name'].split('.')
+            mod = __import__(f"core.{_folder}.{_file}")
+            mod = getattr(mod, _folder)
+            mod = getattr(mod, _file)
+            mod = getattr(mod, _step)
+            obj = mod(**step)
+            step_objs.append(obj)
+        return step_objs
 
 def start():
     # TODO setup loggers
@@ -51,15 +66,12 @@ def start():
     args = vars(get_argsparser().parse_args())
     pipeline_config= parse_config(f"core/{args['pipeline_config']}")
  
-    
-    # create pipeline folder in workspace
+    # creates a folder with the pipeline name in workspace location
     pipeline_name = pipeline_config['pipeline_name']
     workspace_path = f"{WORKSPACE}/{pipeline_name}"
-    create_workspace_folder(workspace_path)
+    create_workspace_folder(workspace_path, delete_if_exist=False)
 
-    steps = get_steps(pipeline_config['steps'])
-    
-    manager = Manager(steps , workspace_path)
+    manager = Manager(pipeline_config['steps'] , workspace_path)
     manager.run()
         
     

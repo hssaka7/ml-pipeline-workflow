@@ -7,6 +7,10 @@ steps:
   class_name: data_extract.extract.Extract
   depends: []
 
+- name: preprocess
+  class_name: data_preprocess.preprocess.PreprocessData
+  depends: ['extract']
+
 - name: feature_engineering
   class_name: data_extract.extract.Extract
   depends: [extract]
