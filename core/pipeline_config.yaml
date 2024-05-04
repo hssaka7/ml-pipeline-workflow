@@ -1,0 +1,16 @@
+pipeline_name: fashion ml
+description: "trains and classifies fashion minset dataset"
+steps:
+- name: extract
+  database: feature_ml
+  sql_file: extract_feature.sql
+  class_name: data_extract.extract.Extract
+  depends: []
+
+- name: feature_engineering
+  class_name: data_extract.extract.Extract
+  depends: [extract]
+
+- name: train
+  class_name: data_extract.extract.Extract
+  depends: [feature_engineering]
