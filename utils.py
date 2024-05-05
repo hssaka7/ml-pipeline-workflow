@@ -2,7 +2,9 @@ import argparse
 import yaml
 import os
 
+import logging
 
+logger = logging.getLogger(__name__)
 def get_argsparser():
     parser = argparse.ArgumentParser()
 
@@ -25,13 +27,13 @@ def parse_config(config_path):
 def create_workspace_folder(workspace_path, delete_if_exist = False):
 
     if os.path.exists(workspace_path):
-        print("the workspace directory already exist.")
+        logger.info(f"the workspace directory already exist: {workspace_path}")
         if delete_if_exist:
-            print("Deleting and creating agian")
+            logger.info("Deleting and creating agian")
             os.rmdir(workspace_path)
             os.mkdir(workspace_path)  
     else:
-        print(f"creating {workspace_path}")
+        logger.info(f"creating {workspace_path}")
         os.mkdir(workspace_path)        
     
     return True

@@ -7,7 +7,7 @@ from step import Step, FileState
 
 class Extract(Step):
     def run(self):
-        print("running extract")
+        self.logger.info("running extract")
         diabetes_dataset = load_diabetes()
         df = pd.DataFrame(data=diabetes_dataset.data,
                           columns=diabetes_dataset.feature_names)
@@ -18,4 +18,3 @@ class Extract(Step):
                          filename= 'diabetes_extract.csv',
                          content = df.to_csv(),
                          metadata = {"message": "success"})
-       

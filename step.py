@@ -1,5 +1,5 @@
 import json
-
+import logging 
 from abc import ABC, abstractmethod
 from utils import write_file
 
@@ -12,9 +12,9 @@ class Step(ABC):
         
         self.name = kwargs['name']
         self.depends = kwargs['depends']
-        
         self.config = kwargs
-
+        
+        self.logger = None
         self.inputs = []
 
     def set_inputs ( self, inputs = []):

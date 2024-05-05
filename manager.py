@@ -1,3 +1,5 @@
+import logging
+import logging.config
 import uuid
 
 from utils import get_argsparser,parse_config, create_workspace_folder
@@ -6,18 +8,28 @@ from utils import get_argsparser,parse_config, create_workspace_folder
 
     
 
+#TODO Generic steps
+
+#TODO Mlflow integration in traning session
+#TODO docker file
 
 # env variables:
 
 WORKSPACE = '/Users/aakashbasnet/development/python/workspace/ml_pipelines'
 
+# loggging
+LOGGER_CONFIG_PATH = "logger_config.yaml"
+logging_config = parse_config(LOGGER_CONFIG_PATH)
+logging.config.dictConfig(logging_config)
+
+logger = logging.getLogger(__name__)
 # manager run 
 class Manager:
     def __init__(self, step_config, workspace_path):
         
-        id = uuid.uuid4()
-        
-        self.workspace = f"{workspace_path}/{id}"
+        self.id = uuid.uuid4()
+        logger.info(f"Starting Manager with id {self.id}")
+        self.workspace = f"{workspace_path}/{self.id}"
         
         # creates folders with uniqiue id for each run inside the pipeline folder
         create_workspace_folder(self.workspace, delete_if_exist=False)
@@ -57,6 +69,7 @@ class Manager:
             mod = getattr(mod, _file)
             mod = getattr(mod, _step)
             obj = mod(**step)
+            obj.logger = logging.getLogger(f"{obj.name}")
             step_objs.append(obj)
         return step_objs
 
@@ -68,9 +81,10 @@ def start():
  
     # creates a folder with the pipeline name in workspace location
     pipeline_name = pipeline_config['pipeline_name']
+    logger.info(f"Pipeline name: {pipeline_name}")
     workspace_path = f"{WORKSPACE}/{pipeline_name}"
     create_workspace_folder(workspace_path, delete_if_exist=False)
-
+    
     manager = Manager(pipeline_config['steps'] , workspace_path)
     manager.run()
         
