@@ -9,12 +9,12 @@ steps:
 
 - name: preprocess
   class_name: data_preprocess.preprocess.PreprocessData
-  depends: ['extract']
+  depends: [extract]
 
 - name: feature_engineering
-  class_name: data_extract.extract.Extract
+  class_name: feature_engineering.features.GetFeature
   depends: [preprocess]
 
 - name: train
-  class_name: data_extract.extract.Extract
+  class_name: model_training.train.Train_Regression
   depends: [feature_engineering]

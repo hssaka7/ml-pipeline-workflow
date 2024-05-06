@@ -8,7 +8,7 @@ class PreprocessData(Step):
         file = self.inputs[0]
       
         df = pd.read_csv(file.open())
-        self.logger.info(df.head())
+        self.logger.info(df.shape)
 
         return FileState(self.workspace,
                          filename = 'data_preprocess.csv',

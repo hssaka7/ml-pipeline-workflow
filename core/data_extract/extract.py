@@ -16,5 +16,5 @@ class Extract(Step):
 
         return FileState(workspace= self.workspace,
                          filename= 'diabetes_extract.csv',
-                         content = df.to_csv(),
+                         content = df.to_csv(index=False),
                          metadata = {"message": "success"})

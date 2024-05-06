@@ -18,7 +18,7 @@ from utils import get_argsparser,parse_config, create_workspace_folder
 # env variables:
 
 WORKSPACE = '/Users/aakashbasnet/development/python/workspace/ml_pipelines'
-
+MLFLOW_TRACKING_SERVER = ''
 # loggging
 LOGGER_CONFIG_PATH = "logger_config.yaml"
 logging_config = parse_config(LOGGER_CONFIG_PATH)
