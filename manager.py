@@ -7,10 +7,12 @@ from utils import get_argsparser,parse_config, create_workspace_folder
 
 
     
-
+# TODO set up complete project
 #TODO Generic steps
 
 #TODO Mlflow integration in traning session
+#TODO checkout model to model registry
+#TODO create FAST API to pull latest model from model registry and make predictions
 #TODO docker file
 
 # env variables:

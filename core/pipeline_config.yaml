@@ -13,7 +13,7 @@ steps:
 
 - name: feature_engineering
   class_name: data_extract.extract.Extract
-  depends: [extract]
+  depends: [preprocess]
 
 - name: train
   class_name: data_extract.extract.Extract
