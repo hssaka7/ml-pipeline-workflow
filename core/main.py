@@ -1,10 +1,14 @@
 import logging
 import logging.config
+import os
+import sys
 import uuid
 
+from importlib import import_module
 from utils import get_argsparser,parse_config, create_workspace_folder
 
 
+from step import step_function
 
     
 # TODO set up complete project
@@ -19,12 +23,16 @@ from utils import get_argsparser,parse_config, create_workspace_folder
 
 WORKSPACE = '/Users/aakashbasnet/development/python/workspace/ml_pipelines'
 MLFLOW_TRACKING_SERVER = ''
+
+sys.path.append(os.getcwd())
+
 # loggging
-LOGGER_CONFIG_PATH = "logger_config.yaml"
+LOGGER_CONFIG_PATH = os.path.join(os.getcwd(),  "logger_config.yaml")
 logging_config = parse_config(LOGGER_CONFIG_PATH)
 logging.config.dictConfig(logging_config)
 
 logger = logging.getLogger(__name__)
+
 # manager run 
 class Manager:
     def __init__(self, step_config, workspace_path):
@@ -64,22 +72,32 @@ class Manager:
         # TODO create dependency graph
         step_objs = []
         for step in self.step_config:
+             
+            
+            
+            
+            if step.get('class_name', None):
+                _project, _folder, _file, _step = step['class_name'].split('.')
+                mod = import_module(f"pipelines.{_project}.{_folder}.{_file}") 
+                mod = getattr(mod,_step)   
+                obj = mod(**step)
 
-            _folder, _file, _step = step['class_name'].split('.')
-            mod = __import__(f"core.{_folder}.{_file}")
-            mod = getattr(mod, _folder)
-            mod = getattr(mod, _file)
-            mod = getattr(mod, _step)
-            obj = mod(**step)
-            obj.logger = logging.getLogger(f"{obj.name}")
-            step_objs.append(obj)
+            else:
+                _project, _folder, _file, _step = step['function_name'].split('.')
+                mod = import_module(f"pipelines.{_project}.{_folder}.{_file}") 
+                mod = getattr(mod,_step)
+                obj = step_function(mod)
+
+            
+            
+            step_objs.append(obj)  
         return step_objs
 
 def start():
     # TODO setup loggers
 
     args = vars(get_argsparser().parse_args())
-    pipeline_config= parse_config(f"core/{args['pipeline_config']}")
+    pipeline_config= parse_config(f"{args['pipeline_config']}")
  
     # creates a folder with the pipeline name in workspace location
     pipeline_name = pipeline_config['pipeline_name']

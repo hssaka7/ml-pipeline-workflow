@@ -3,9 +3,18 @@ import logging
 from abc import ABC, abstractmethod
 from utils import write_file
 
-
+from functools import wraps
 # TODO implement file state
 # TODO duty shoud be able to import the feed class 
+
+
+def step_function(func):
+    func.__dependencies__ = set()
+    
+    @wraps(func)
+    def wrapper(inputs, *args, **kwargs):
+        return func(inputs, *args, **kwargs)
+    return wrapper
 
 class Step(ABC):
     def __init__(self, *args, **kwargs):

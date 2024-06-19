@@ -1,13 +1,15 @@
 import json
 import pandas as pd
+import logging
 
 from sklearn.model_selection import train_test_split
 
-from step import Step, FileState
+from core.step import Step, FileState
 
+logger = logging.getLogger(__name__)
 class GetFeature(Step):
     def run(self):
-        self.logger.info("Running extract features ...")
+        logger.info("Running extract features ...")
 
         data = self.inputs[0]
         df = pd.read_csv(data.open())

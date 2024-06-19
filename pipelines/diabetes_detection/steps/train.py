@@ -1,13 +1,14 @@
 import json
+import logging
 
 from sklearn.ensemble import RandomForestRegressor
 
-from step import Step
+from core.step import Step
 
-
+logger = logging.getLogger(__name__)
 class Train_Regression(Step):
     def run(self):
-        self.logger.info("Running Training ...")
+        logger.info("Running Training ...")
         input = self.inputs[0]
         data = json.load(input.open())
 

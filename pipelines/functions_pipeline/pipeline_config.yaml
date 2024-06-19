@@ -1,0 +1,21 @@
+pipeline_name: functional_pipeline
+project_name:
+description: "trains and classifies fashion minset dataset"
+steps:
+- name: extract
+  database: feature_ml
+  sql_file: extract_feature.sql
+  function_name: functions_pipeline.steps.extract.extract_data
+  depends: []
+
+- name: preprocess
+  function_name: functions_pipeline.steps.preprocess.preprocess_data
+  depends: [extract]
+
+- name: feature_engineering
+  function_name: functions_pipeline.steps.features.feature_engineering
+  depends: [preprocess]
+
+- name: train
+  function_name: functions_pipeline.steps.train.train_randomforest
+  depends: [feature_engineering]

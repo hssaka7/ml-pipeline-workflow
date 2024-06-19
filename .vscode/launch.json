@@ -5,12 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "pipeline",
+            "name": "diabetes_pipeline",
             "type": "debugpy",
             "request": "launch",
-            "program": "manager.py",
+            "program": "core/main.py",
             "console": "integratedTerminal",
-            "args": "pipeline_config.yaml"
-        }
+            "args": "pipelines/diabetes_detection/pipeline_config.yaml"
+        },
+
+        {
+            "name": "function_pipeline",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "core/main.py",
+            "console": "integratedTerminal",
+            "args": "pipelines/functions_pipeline/pipeline_config.yaml"
+        },
     ]
 }
+

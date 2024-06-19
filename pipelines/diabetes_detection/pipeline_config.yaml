@@ -1,20 +1,21 @@
 pipeline_name: fashion ml
+project_name:
 description: "trains and classifies fashion minset dataset"
 steps:
 - name: extract
   database: feature_ml
   sql_file: extract_feature.sql
-  class_name: data_extract.extract.Extract
+  class_name: diabetes_detection.steps.extract.Extract
   depends: []
 
 - name: preprocess
-  class_name: data_preprocess.preprocess.PreprocessData
+  class_name: diabetes_detection.steps.preprocess.PreprocessData
   depends: [extract]
 
 - name: feature_engineering
-  class_name: feature_engineering.features.GetFeature
+  class_name: diabetes_detection.steps.features.GetFeature
   depends: [preprocess]
 
 - name: train
-  class_name: model_training.train.Train_Regression
+  class_name: diabetes_detection.steps.train.Train_Regression
   depends: [feature_engineering]
