@@ -21,6 +21,17 @@
             "console": "integratedTerminal",
             "args": "pipelines/functions_pipeline/pipeline_config.yaml"
         },
+
+        {
+            "name": "complex_depndency",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "core/main.py",
+            "console": "integratedTerminal",
+            "args": "pipelines/passenger_detection/pipeline_config.yaml"
+        },
+
+        
     ]
 }
 

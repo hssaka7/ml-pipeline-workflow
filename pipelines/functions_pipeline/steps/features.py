@@ -9,10 +9,10 @@ from core.step import step_function, FileState
 logger = logging.getLogger(__name__)
 
 @step_function
-def feature_engineering(workspace, inputs= None, config=None):
+def feature_engineering(config):
     logger.info("Running extract features ...")
 
-    data = inputs[0]
+    data = config['inputs'][0]
     df = pd.read_csv(data.open())
     print(df.columns)
     feature_column = ['age', 'sex', 'bmi']
@@ -27,6 +27,6 @@ def feature_engineering(workspace, inputs= None, config=None):
         'y_test': y_test
     }
     
-    return FileState(workspace, 
+    return FileState(config['workspace'], 
                         filename='features.json',
                         content = json.dumps(features))

@@ -1,58 +1,43 @@
-
-# core/pipeline_executor.py
-
-import yaml
-import importlib
-from step import step_function, FileState
-
 import logging
+import os
+import uuid
+import yaml
 
-logger = logging.getLogger(__name__)
 
-class PipelineExecutor:
-    def __init__(self, config_file):
-        self.config_file = config_file
-        self.steps_config = self._load_steps_config()
+from dependency import DependencyManager
 
-    def _load_steps_config(self):
-        with open(self.config_file, 'r') as f:
-            config = yaml.safe_load(f)
-        return config.get('steps', [])
+from utils import create_workspace_folder
+
+
+class Pipeline:
+    def __init__(self, config_file, workspace_path):
+        
+        self.logger = logging.getLogger(__name__)
+        self.id = uuid.uuid4()
+        self.logger.info(f"\n Starting pipeline with id {self.id}")
+
+        self.workspace = os.path.join(workspace_path, str(self.id))
+        create_workspace_folder(self.workspace, delete_if_exist=False)
+
+        self.steps_list = config_file
+        
+        self.ordered_steps_config = dict()
+        self._create_steps_execution_order()
+
+    # create the linear and parallel execution and attach the step module 
+    def _create_steps_execution_order(self):
+        
+        dm = DependencyManager(self.steps_list)
+        steps_reference, parallel_order, linear_order = dm.get_execution_order()
+        
+        execution_order = {
+            "step_reference": steps_reference,
+            "parallel_order": parallel_order,
+            "linear_order": linear_order,
+        }
+        
+        self.ordered_steps_config = execution_order
+
 
     def get_steps_to_execute(self):
-        steps_to_execute = {}
-        for step_config in self.steps_config:
-            step_name = step_config['name']
-            class_name = step_config['class_name']
-            depends_on = step_config.get('depends_on', [])
-
-            # Dynamically import step function/class
-            module_name, func_name = class_name.rsplit('.', 1)
-            module = importlib.import_module(module_name)
-            step_func = getattr(module, func_name)
-
-            # Wrap step function with step_function decorator
-            wrapped_step_func = step_function(step_func)
-
-            
-
-            # Store the wrapped step function in steps_to_execute dictionary
-            steps_to_execute[step_name] = wrapped_step_func
-
-        return self._resolve_dependencies(steps_to_execute)
-
-    def _resolve_dependencies(self, steps_to_execute):
-        # Convert steps_to_execute dictionary to a list of tuples
-        steps_list = list(steps_to_execute.items())
-
-        # Topologically sort steps based on dependencies using Kahn's algorithm
-        ordered_steps = []
-        while steps_list:
-            removable_steps = [step for step in steps_list if all(dep in ordered_steps for dep in step[1].__dependencies__)]
-            if not removable_steps:
-                raise ValueError("Circular dependency detected or dependency not satisfied")
-            ordered_steps.extend(removable_steps)
-            steps_list = [step for step in steps_list if step not in removable_steps]
-
-        # Return ordered steps as a dictionary
-        return dict(ordered_steps)
+        return self.ordered_steps_config

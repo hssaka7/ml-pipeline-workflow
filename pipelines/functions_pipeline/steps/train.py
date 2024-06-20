@@ -8,10 +8,10 @@ from core.step import step_function
 logger = logging.getLogger(__name__)
 
 @step_function
-def train_randomforest(workspace, inputs, config):
+def train_randomforest(config):
     
     logger.info("Running Training ...")
-    input = inputs[0]
+    input = config['inputs'][0]
     data = json.load(input.open())
 
     x_train = data['x_train']

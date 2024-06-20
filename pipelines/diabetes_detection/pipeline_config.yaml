@@ -1,4 +1,4 @@
-pipeline_name: fashion ml
+pipeline_name: diabetes_pipeline
 project_name:
 description: "trains and classifies fashion minset dataset"
 steps:
@@ -18,4 +18,4 @@ steps:
 
 - name: train
   class_name: diabetes_detection.steps.train.Train_Regression
-  depends: [feature_engineering]
+  depends: [feature_engineering, preprocess]

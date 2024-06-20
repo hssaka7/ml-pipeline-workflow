@@ -4,27 +4,32 @@ from abc import ABC, abstractmethod
 from utils import write_file
 
 from functools import wraps
-# TODO implement file state
-# TODO duty shoud be able to import the feed class 
 
 
+# step abstractions with decorators for functional programming 
 def step_function(func):
     func.__dependencies__ = set()
     
     @wraps(func)
-    def wrapper(inputs, *args, **kwargs):
-        return func(inputs, *args, **kwargs)
+    def wrapper( **kwargs):
+        name = kwargs['name']
+        # depends = kwargs['depends']
+        inputs = kwargs.get('inputs', [])
+
+        workspace = kwargs['workspace']
+        
+        return func(kwargs)
     return wrapper
 
+# step abstractions with Class for object oriented programming
 class Step(ABC):
     def __init__(self, *args, **kwargs):
         
+        self.workspace = kwargs['workspace']
         self.name = kwargs['name']
         self.depends = kwargs['depends']
         self.config = kwargs
-        
-        self.logger = None
-        self.inputs = []
+        self.inputs = kwargs['inputs']
 
     def set_inputs ( self, inputs = []):
         self.inputs = inputs
@@ -34,6 +39,8 @@ class Step(ABC):
         pass
 
 
+# Input and output abstraction for Files
+# Each file will be a file state
 class FileState():
     def __init__(self,workspace, filename, content, metadata = None):
         
