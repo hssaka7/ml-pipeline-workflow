@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 from pipeline import Pipeline
 from utils import get_argsparser,parse_config, create_workspace_folder
 
-
-#TODO Generic steps
+#TODO Generic steps: read from dropzone, write to dropzone, read / write to db tables/ S3
 #TODO Mlflow integration in traning session
 
 #TODO docker file
