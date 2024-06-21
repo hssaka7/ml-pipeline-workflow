@@ -5,15 +5,20 @@ import sys
 
 from dotenv import load_dotenv
 
-from pipeline import Pipeline
-from utils import get_argsparser,parse_config, create_workspace_folder
+from core.pipeline import Pipeline
+from core.utils import get_argsparser,parse_config, create_workspace_folder
 
 #TODO Generic steps: read from dropzone, write to dropzone, read / write to db tables/ S3
+#TODO parallel processing
+#TODO add a rerun capabilities
 #TODO Mlflow integration in traning session
 
 #TODO docker file
+#TODO add test cases
+#TODO convert this to package and cli tool
+# TODO upload to PYPI
 
-# env variables:
+# loading environment variable
 load_dotenv()
 WORKSPACE = os.getenv("WORKSPACE")
 
@@ -24,7 +29,7 @@ LOGGER_CONFIG_PATH = os.path.join(os.getcwd(),  "logger_config.yaml")
 logging_config = parse_config(LOGGER_CONFIG_PATH)
 logging.config.dictConfig(logging_config)
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('main')
 
 
 
@@ -85,7 +90,6 @@ def start():
     logger.info("Ending run")
         
     
-
-if __name__ == "__main__":
-    start()
+if __name__ == '__main__':
+     start()
 

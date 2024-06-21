@@ -1,12 +1,12 @@
 import logging
 import os
 import uuid
-import yaml
 
 
-from dependency import DependencyManager
 
-from utils import create_workspace_folder
+from core.dependency import DependencyManager
+
+from core.utils import create_workspace_folder
 
 
 class Pipeline:

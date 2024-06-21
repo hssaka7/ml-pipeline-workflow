@@ -1,7 +1,9 @@
 import json
 import logging 
+
 from abc import ABC, abstractmethod
-from utils import write_file
+from dataclasses import dataclass
+from core.utils import write_file
 
 from functools import wraps
 
@@ -37,6 +39,17 @@ class Step(ABC):
     @abstractmethod
     def run(self):
         pass
+
+@dataclass
+class FileIO:
+    workspce: str
+    filename: str
+    content: str
+    save_func: callable
+
+
+    def open(self):
+        return open(self.file_path, 'r')
 
 
 # Input and output abstraction for Files
