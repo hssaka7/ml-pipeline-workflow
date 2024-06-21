@@ -3,7 +3,7 @@ import logging
 
 from sklearn.ensemble import RandomForestRegressor
 
-from core.step import Step
+from mltool.step import Step
 
 logger = logging.getLogger(__name__)
 class Train_Regression(Step):

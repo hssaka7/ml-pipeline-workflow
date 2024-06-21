@@ -4,7 +4,7 @@ import logging
 
 from sklearn.model_selection import train_test_split
 
-from core.step import Step, FileState
+from mltool.step import Step, FileState
 
 logger = logging.getLogger(__name__)
 class GetFeature(Step):

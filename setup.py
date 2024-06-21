@@ -17,7 +17,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'mltool=core.cli:start',
+            'mltool=mltool.cli:start',
         ],
     },
 )

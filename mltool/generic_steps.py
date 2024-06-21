@@ -1,5 +1,5 @@
 import logging
-from core.step import Step, FileState
+from mltool.step import Step, FileState
 
 logger = logging.getLogger(__name__)
 

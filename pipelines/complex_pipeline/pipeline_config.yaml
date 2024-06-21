@@ -1,0 +1,45 @@
+pipeline_name: complex_pipeline
+project_name: example_project
+description: "A complex pipeline with multiple interdependent steps"
+steps:
+  - name: step1
+    class_name: complex_pipeline.steps.random.GetRandomNumbers
+    depends: []
+
+  - name: step2
+    class_name: complex_pipeline.steps.random.AddOne
+    depends: [step1]
+
+  - name: step3
+    class_name: complex_pipeline.steps.random.AddOne
+    depends: [step1]
+
+  - name: step4
+    class_name: complex_pipeline.steps.random.AddOne
+    depends: [step2, step3]
+
+  - name: step5
+    class_name: complex_pipeline.steps.random.AddOne
+    depends: [step2]
+
+  - name: step6
+    class_name: complex_pipeline.steps.random.AddOne
+    depends: [step4]
+
+  - name: step7
+    class_name: complex_pipeline.steps.random.AddOne
+    depends: [step4]
+
+  - name: step8
+    class_name: complex_pipeline.steps.random.AddOne
+    depends: [step5, step6]
+
+  - name: step9
+    class_name: complex_pipeline.steps.random.AddOne
+    depends: [step7]
+
+  - name: step10
+    class_name: complex_pipeline.steps.random.AddOne
+    depends: [step8, step9]
+  
+

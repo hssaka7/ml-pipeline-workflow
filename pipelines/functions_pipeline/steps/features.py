@@ -4,7 +4,7 @@ import logging
 
 from sklearn.model_selection import train_test_split
 
-from core.step import step_function, FileState
+from mltool.step import step_function, FileState
 
 logger = logging.getLogger(__name__)
 

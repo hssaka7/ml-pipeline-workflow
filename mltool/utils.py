@@ -5,24 +5,27 @@ import os
 import logging
 
 logger = logging.getLogger(__name__)
-def get_argsparser():
-    parser = argparse.ArgumentParser()
 
-    parser.add_argument("pipeline_config", help="name of the pipleline configuration file")
+def parse_command_line_args():
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(description="Execute steps based on configurations and handle reruns.")
+    parser.add_argument('pipeline_config', type=str, help="Path to YAML file containing step configurations.")
+    parser.add_argument('--rerun', action='store_true', help="Flag to indicate rerun mode.")
+    parser.add_argument('--run-id', type=str, default=None, help="ID for rerun mode to use existing outputs.")
+    args =  parser.parse_args()
 
-    parser.add_argument("--debug", help = "turn on debugging", action="store_true")
+    return args.pipeline_config, args.rerun, args.run_id
 
-    return parser
-
-def parse_config(config_path):
+def parse_yaml_config(config_path):
+    
+    """Parse Yaml configuration files"""
     with open(config_path) as input_stream:
         try:
             config = yaml.safe_load(input_stream)
         except yaml.YAMLError as exc:
             raise exc
 
-    return config or None
-
+    return config
 
 def create_workspace_folder(workspace_path, delete_if_exist = False):
 

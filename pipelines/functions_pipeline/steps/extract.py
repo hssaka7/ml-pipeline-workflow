@@ -5,7 +5,7 @@ import logging
 
 from sklearn.datasets import load_diabetes
 
-from core.step import step_function, FileState
+from mltool.step import step_function, FileState
 from ..helpers.functions import add
 
 

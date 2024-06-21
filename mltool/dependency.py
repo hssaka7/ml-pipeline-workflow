@@ -62,9 +62,9 @@ class DependencyManager():
         for step in self.steps:
             
             name = step['name']
-            self.steps_config[name] = self._attach_step(step)
 
-            # attach a function here
+            #attaching a step module
+            self.steps_config[name] = self._attach_step(step)
             
             for dependency in step['depends']:
 

@@ -9,7 +9,7 @@
             "name": "Python: mltool",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/core/cli.py",
+            "program": "${workspaceFolder}/mltool/cli.py",
             "args": ["pipelines/diabetes_detection/pipeline_config.yaml"],  // Add necessary arguments
             "console": "integratedTerminal",
             "env": {
@@ -22,7 +22,7 @@
             "name": "diabetes_pipeline",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/core/cli.py",
+            "program": "${workspaceFolder}/mltool/cli.py",
             
             "console": "integratedTerminal",
             "env": {
@@ -37,7 +37,7 @@
             "name": "function_pipeline",
             "type": "debugpy",
             "request": "launch",
-            "program": "core/cli.py",
+            "program": "mltool/cli.py",
             "console": "integratedTerminal",
             "args": "pipelines/functions_pipeline/pipeline_config.yaml"
         },
@@ -46,9 +46,9 @@
             "name": "complex_depndency",
             "type": "debugpy",
             "request": "launch",
-            "program": "core/cli.py",
+            "program": "mltool/cli.py",
             "console": "integratedTerminal",
-            "args": "pipelines/passenger_detection/pipeline_config.yaml"
+            "args": "pipelines/complex_pipeline/pipeline_config.yaml"
         },
 
         
