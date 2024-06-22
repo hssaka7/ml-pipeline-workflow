@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='mltool',
     version='0.1.0',
-    packages=['mltool'],
+    packages=find_packages(),
     install_requires=[
         'graphviz',
         'matplotlib',
