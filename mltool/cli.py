@@ -29,7 +29,8 @@ from mltool.utils import parse_command_line_args,parse_yaml_config, create_works
 load_dotenv()
 WORKSPACE = os.getenv("WORKSPACE")
 
-# sys.path.append(os.getcwd())
+
+PIPELINE_PATH = "pipelines"
 
 # loggging
 LOGGER_CONFIG_PATH = os.path.join(os.getcwd(),  "logger_config.yaml")
@@ -39,7 +40,7 @@ logging.config.dictConfig(logging_config)
 
 logger = logging.getLogger('main')
 
-
+print(os.getcwd())
 
 def execute_step(step_func,config):
 

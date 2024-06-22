@@ -43,7 +43,12 @@ class DependencyManager():
 
     
     def _attach_step(self,step):
-       
+
+        import os
+        import sys
+        from pprint import pprint
+
+        
         # Dynamically import step function or STEP class
         if step.get('class_name', None):
             _project, _folder, _file, _step = step['class_name'].split('.')
@@ -51,7 +56,15 @@ class DependencyManager():
         else:
             _project, _folder, _file, _step = step['function_name'].split('.')
         
-        mod = import_module(f"pipelines.{_project}.{_folder}.{_file}") 
+        
+        ## TODO Find a way around this
+        PATH_TO_PIPELINES = '/Users/aakashbasnet/development/python/projects/ml-pipeline-workflow/pipelines/'
+        sys.path.insert(0, f"{os.path.join(PATH_TO_PIPELINES, _project)}")
+
+
+    
+
+        mod = import_module(f"{_folder}.{_file}") 
         mod = getattr(mod,_step)
                 
         step["step_module"] = mod

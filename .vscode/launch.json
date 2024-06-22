@@ -4,54 +4,12 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
-            "name": "Python: mltool",
+            "name": "complex_pipeline",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/mltool/cli.py",
-            "args": ["pipelines/diabetes_detection/pipeline_config.yaml"],  // Add necessary arguments
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
-            },
-            "cwd": "${workspaceFolder}",
-
-        },
-        {
-            "name": "diabetes_pipeline",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "${workspaceFolder}/mltool/cli.py",
-            
-            "console": "integratedTerminal",
-            "env": {
-                "PYTHONPATH": "${workspaceFolder}"
-            },
-            "cwd": "${workspaceFolder}",
-
-            "args": "pipelines/diabetes_detection/pipeline_config.yaml"
-        },
-
-        {
-            "name": "function_pipeline",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "mltool/cli.py",
-            "console": "integratedTerminal",
-            "args": "pipelines/functions_pipeline/pipeline_config.yaml"
-        },
-
-        {
-            "name": "complex_depndency",
-            "type": "debugpy",
-            "request": "launch",
-            "program": "mltool/cli.py",
-            "console": "integratedTerminal",
-            "args": "pipelines/complex_pipeline/pipeline_config.yaml"
-        },
-
-        
+            "module": "mltool.cli",
+            "args": ["pipelines/complex_pipeline/pipeline_config.yaml"]
+        }
     ]
 }
-
