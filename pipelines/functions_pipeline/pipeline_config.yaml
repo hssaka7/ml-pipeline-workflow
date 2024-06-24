@@ -1,5 +1,5 @@
 pipeline_name: functional_pipeline
-project_name:
+project_nameccx:
 description: "trains and classifies fashion minset dataset"
 steps:
 - name: extract
@@ -19,3 +19,5 @@ steps:
 - name: train
   function_name: functions_pipeline.steps.train.train_randomforest
   depends: [feature_engineering]
+
+- 

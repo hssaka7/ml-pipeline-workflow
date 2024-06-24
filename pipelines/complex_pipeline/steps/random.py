@@ -2,6 +2,8 @@ import json
 import logging
 import random
 
+import time
+
 from helpers.utils import round_to_two
 from mltool.step import Step, FileState
 
@@ -23,6 +25,10 @@ class AddOne(Step):
         one_added = [round_to_two(rn+1) for f in self.inputs for rn in json.load(f.open())]
         self.logger.info(one_added)
         self.logger.info(len(one_added))
+
+        for i in range(5): 
+            self.logger.info(f"{self.name}: {i}")
+            time.sleep(1)
 
         return FileState(self.workspace,
                          'one_added.json',

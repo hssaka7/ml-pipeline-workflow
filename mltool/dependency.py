@@ -1,6 +1,8 @@
 import logging
 import networkx as nx
 import matplotlib.pyplot as plt
+import os
+import sys
 
 from collections import defaultdict, deque
 from graphviz import Digraph
@@ -21,14 +23,26 @@ class DependencyManager():
         self.steps_config = dict()
         self.graph = defaultdict(list)
         self.degree = defaultdict(int)
-        
-        self.logger.info("Creating execution order and attaching step module")
-        self._create_dependency_graph()
-        self._topological_sort()
 
+        self._create_execution_order()
+
+        
+    def _create_execution_order(self):
+        
+        self.logger.info("Managing dependencies and creating execution order .. ")
+        
+        self._create_dependency_graph()
+        
+        self._topological_sort()
+        
         # self._draw_dependency_graph()
         # self._draw_dependency_graph2()
+
+        self.logger.info("execution order created successfully")
+
+        
     
+        
     
     def get_execution_order(self):
         
@@ -42,27 +56,19 @@ class DependencyManager():
         return len(self.linear_execution_order) == len(self.steps)
 
     
-    def _attach_step(self,step):
+    def _attach_step(self,step: dict):
 
-        import os
-        import sys
-        from pprint import pprint
-
-        
         # Dynamically import step function or STEP class
-        if step.get('class_name', None):
-            _project, _folder, _file, _step = step['class_name'].split('.')
-           
-        else:
-            _project, _folder, _file, _step = step['function_name'].split('.')
+
+        step_module = step['class_name']  if step.get('class_name', None)  else step['function_name']
+        self.logger.info(f"Attaching class/function for step_name: {step['name']} with  step_module: {step_module} ")
+
+        _project, _folder, _file, _step = step_module.split('.')
         
         
         ## TODO Find a way around this
         PATH_TO_PIPELINES = '/Users/aakashbasnet/development/python/projects/ml-pipeline-workflow/pipelines/'
         sys.path.insert(0, f"{os.path.join(PATH_TO_PIPELINES, _project)}")
-
-
-    
 
         mod = import_module(f"{_folder}.{_file}") 
         mod = getattr(mod,_step)
@@ -87,6 +93,7 @@ class DependencyManager():
 
     # Implementaion of Topological Sorting (Kahn's Algorithm)        
     def _topological_sort(self):
+        self.logger.info("Resolving dependencies ... ")
         queue = deque([step for step in self.steps_config if self.degree[step] == 0])
 
         while queue:

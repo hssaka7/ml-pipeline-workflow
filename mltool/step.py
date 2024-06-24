@@ -9,8 +9,6 @@ from functools import wraps
 
 # step abstractions with decorators for functional programming 
 def step_function(func):
-    func.__dependencies__ = set()
-    
     @wraps(func)
     def wrapper( **kwargs):
         name = kwargs['name']

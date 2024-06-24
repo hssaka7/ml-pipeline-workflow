@@ -12,7 +12,7 @@ from mltool.utils import parse_command_line_args,parse_yaml_config, create_works
 #TODO parallel processing
 #TODO add a rerun capabilities
 #TODO Mlflow integration in traning session
-#TODO add capability to import steps and execute a pipeline
+#TODO add capability to import steps and execute a pipeline 
 #TODO Add metadata to workspace, make workspace to read all the inputs in the filestate, rather than returning
 ##### all the returns are saved as a file in file space and recorded to metadata as returns.
 
@@ -27,12 +27,7 @@ from mltool.utils import parse_command_line_args,parse_yaml_config, create_works
 
 # loading environment variable
 load_dotenv()
-WORKSPACE = os.getenv("WORKSPACE")
 
-
-PIPELINE_PATH = "pipelines"
-
-# loggging
 LOGGER_CONFIG_PATH = os.path.join(os.getcwd(),  "logger_config.yaml")
 logging_config = parse_yaml_config(LOGGER_CONFIG_PATH)
 logging.config.dictConfig(logging_config)
@@ -40,10 +35,13 @@ logging.config.dictConfig(logging_config)
 
 logger = logging.getLogger('main')
 
-print(os.getcwd())
+
 
 def execute_step(step_func,config):
-
+    
+    # determine if the execute step is calss or the function
+    # create workspace before executing
+    # 
     step_name = config['name']
     is_class = bool(config.get('class_name', None))
    
@@ -61,26 +59,38 @@ def execute_step(step_func,config):
     
 
 def start():
+    logger.info("Starting ...")
 
+
+    # read command line arguments
     pipeline_config_path, is_rerun, run_id, *_ = parse_command_line_args()
+    
+    # set up logger
 
-    print(pipeline_config_path)
-    print(is_rerun)
-    print(run_id)
+    # set up Pipeline and get step configuration to run
+
+    # Execute the steps
+     
+    # Create execution report
+
+    # print(pipeline_config_path)
+    # print(is_rerun)
+    # print(run_id)
     
 
     # TODO manage rerun here, call pipeline class with rerun argumnent
     
-    # process the pipeline config and get the execution order and steps.
+    # Pipeline creation: process the pipeline config and get the execution order and steps.
     pipeline_config=parse_yaml_config(pipeline_config_path)
     pipeline = Pipeline(pipeline_config)
     steps_to_execute = pipeline.get_steps_to_execute()
-
-
+    
+    # Execute the steps and save results
     results = dict()
     step_references = steps_to_execute['step_reference']
     
     # TODO take the parallel order instead of linear oreder
+    # Running linearly
     for step_name in steps_to_execute['linear_order']:
            
             # worspace for each steps

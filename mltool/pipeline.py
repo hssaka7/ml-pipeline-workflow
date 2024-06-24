@@ -16,7 +16,7 @@ class Pipeline:
         self.run_id = uuid.uuid4()
 
         self.logger = logging.getLogger(__name__)
-        self.logger.info(f"\n Starting pipeline with id {self.run_id}")
+        self.logger.info(f"\n Creating pipeline: {self.pipeline_name}  with id {self.run_id}")
 
         self.steps_list = config_file['steps']
 
@@ -26,8 +26,13 @@ class Pipeline:
         self._create_worspace()
         self._create_steps_execution_order()
 
+        self.logger.info(f"Pipeline: {self.pipeline_name} created successfully with run id: {self.run_id}")
+
     def _create_worspace(self):
          # folder with pipeline name inside root_workspace
+
+        self.logger.info(f"Setting up workspace for : {self.pipeline_name} and run id: {self.run_id}")
+        
         root_workspace = os.getenv('WORKSPACE')
         pipeline_workspace_path = os.path.join(root_workspace, self.pipeline_name)
         create_workspace_folder(pipeline_workspace_path, delete_if_exist=False)
@@ -37,8 +42,12 @@ class Pipeline:
         create_workspace_folder(self.run_workspace, delete_if_exist=False)
 
 
+
+
     # create the linear and parallel execution and attach the step module 
     def _create_steps_execution_order(self):
+
+        self.logger.info(f"Creating execution order for steps in {self.pipeline_name}")
         
         dm = DependencyManager(self.steps_list)
         steps_reference, parallel_order, linear_order = dm.get_execution_order()
