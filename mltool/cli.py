@@ -52,10 +52,12 @@ def execute_step(step_func,config):
             obj = step_func(**config)
             result = obj.run()
         
+        # Create a medata file, if exist, update it with run = successfull, otherwise error message
         return result
+    
     except Exception as e:
         logger.error(f"Error executing step '{step_name}': {e}")
-        return dict()
+        raise
     
 
 def start():
@@ -68,26 +70,16 @@ def start():
     # set up logger
 
     # set up Pipeline and get step configuration to run
-
-    # Execute the steps
-     
-    # Create execution report
-
-    # print(pipeline_config_path)
-    # print(is_rerun)
-    # print(run_id)
-    
-
-    # TODO manage rerun here, call pipeline class with rerun argumnent
-    
-    # Pipeline creation: process the pipeline config and get the execution order and steps.
     pipeline_config=parse_yaml_config(pipeline_config_path)
     pipeline = Pipeline(pipeline_config)
     steps_to_execute = pipeline.get_steps_to_execute()
     
+  
     # Execute the steps and save results
     results = dict()
     step_references = steps_to_execute['step_reference']
+
+    # TODO manage rerun here, call pipeline class with rerun argumnent
     
     # TODO take the parallel order instead of linear oreder
     # Running linearly

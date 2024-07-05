@@ -1,5 +1,6 @@
 import json
 import logging 
+import os
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -52,18 +53,33 @@ class FileIO:
 # Input and output abstraction for Files
 # Each file will be a file state
 class FileState():
-    def __init__(self,workspace, filename, content, metadata = None):
-        
-        self.file_path = f'{workspace}/{filename}'
-        
-        self.meatdata_path = f'{workspace}/_metadata.json'
-        metadata = metadata if bool(metadata) else dict()
-        
+    
+    def __init__(self,workspace, filename, content , file_path = None, save_function = None, metadata = None):
 
-        write_file(self.file_path, content)
-        write_file(self.meatdata_path, json.dumps(metadata))
-       
+        
+        if not bool(file_path):
+            _temp_file_path = os.path.join(workspace,filename)
+            self.file_path = self._create_file_path(_temp_file_path, content,save_function)
+ 
+        # TODO check file path must be a file inside the workspace
+        # TODO file path must exist
+        else:
+            self.file_path = file_path
+    
+    def _create_file_path(self, file_path, content, save_function):
+        
+        # check if content is there
+        if not bool(content):
+            raise Exception(" Must provide (string I/O file content) or (object content and save function)")
+        
+        if  bool(save_function):
+            save_function(content)
+        
+        else:
+             write_file(file_path, content)
+             
+        return file_path
+
+
     def open (self):
-        return open(self.file_path, 'r')
-            
-
+        return  open(self.file_path, 'r') 

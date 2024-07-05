@@ -10,10 +10,12 @@ from mltool.utils import create_workspace_folder
 
 
 class Pipeline:
-    def __init__(self, config_file):
+    def __init__(self, config_file, is_rerun=False, run_id = None):
+
+        
         
         self.pipeline_name = config_file['pipeline_name']
-        self.run_id = uuid.uuid4()
+        self.run_id = uuid.uuid4() if not run_id else run_id
 
         self.logger = logging.getLogger(__name__)
         self.logger.info(f"\n Creating pipeline: {self.pipeline_name}  with id {self.run_id}")
