@@ -1,4 +1,5 @@
 import argparse
+import shutil
 import yaml
 import os
 
@@ -36,7 +37,7 @@ def create_workspace_folder(workspace_path, delete_if_exist = False):
             logger.info(f"the workspace directory already exist: {workspace_path}")
             if delete_if_exist:
                 logger.info("Deleting and creating agian")
-                os.rmdir(workspace_path)
+                shutil.rmtree(workspace_path)
                 os.mkdir(workspace_path)  
         else:
             logger.info(f"creating {workspace_path}")

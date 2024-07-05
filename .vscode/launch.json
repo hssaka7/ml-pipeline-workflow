@@ -5,11 +5,21 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "complex_pipeline",
+            "name": "run:complex_pipeline",
             "type": "debugpy",
             "request": "launch",
             "module": "mltool.cli",
             "args": ["pipelines/complex_pipeline/pipeline_config.yaml"]
-        }
+        },
+        {
+            "name": "rerun:complex_pipeline",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "mltool.cli",
+            "args": ["pipelines/complex_pipeline/pipeline_config.yaml", 
+                    "--rerun",
+                    "--run-id", "99f47fe9-be2c-441c-889a-fdcf7f97f9db",]
+        },
+            
     ]
 }

@@ -71,7 +71,7 @@ def start():
 
     # set up Pipeline and get step configuration to run
     pipeline_config=parse_yaml_config(pipeline_config_path)
-    pipeline = Pipeline(pipeline_config)
+    pipeline = Pipeline(pipeline_config , is_rerun=is_rerun, run_id=run_id)
     steps_to_execute = pipeline.get_steps_to_execute()
     
   
