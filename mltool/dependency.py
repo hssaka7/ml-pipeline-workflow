@@ -74,6 +74,8 @@ class DependencyManager():
         mod = getattr(mod,_step)
                 
         step["step_module"] = mod
+        # set rerun here
+        step["is_rerun"] = step.get("rerun", False)
         return step
         
     def _create_dependency_graph(self):

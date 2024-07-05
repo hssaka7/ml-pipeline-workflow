@@ -15,17 +15,21 @@ class Pipeline:
         
         self.logger = logging.getLogger(__name__)
         self.pipeline_name = config_file['pipeline_name']
+        self.steps_list = config_file['steps']
         self.is_rerun = is_rerun
+
 
         if self.is_rerun:
             self.run_id = run_id
             self.logger.info(f" Rerunning pipleline: {self.pipeline_name} with id : {self.run_id}")
+            # add the rerun variables to the steps
+            # manage the workspace accordingly
         
         else:   
             self.run_id = uuid.uuid4() 
             self.logger.info(f"\n Creating pipeline: {self.pipeline_name}  with id {self.run_id}")
 
-        self.steps_list = config_file['steps']
+        
         self.run_workspace = None
         self.ordered_steps_config = dict()
 
@@ -45,7 +49,7 @@ class Pipeline:
         
         # folder with run_id inside the pipleline name
         self.run_workspace = os.path.join(pipeline_workspace_path, str(self.run_id))
-        create_workspace_folder(self.run_workspace, delete_if_exist=True)
+        create_workspace_folder(self.run_workspace, delete_if_exist=False)
 
 
 

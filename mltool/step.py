@@ -31,8 +31,32 @@ class Step(ABC):
         self.config = kwargs
         self.inputs = kwargs['inputs']
 
+        self.metadata = dict()
+        self.rerun = kwargs.get('rerun', False)
+
+
     def set_inputs ( self, inputs = []):
+        # step input workspace
+        # get the input from metadata, and the files in the filestate
+
+        
         self.inputs = inputs
+
+    def execute(self):
+        
+        # if rerun then, delete if any thing exists in the workfolder. 
+        # if rerun is False then dont execute the step
+        _metadata = dict()
+        
+        try:
+            result = self.run()
+            _metadata["success"] = True
+            return result
+        
+        except Exception as e:
+            _metadata["success"] = False
+            raise 
+        
 
     @abstractmethod
     def run(self):

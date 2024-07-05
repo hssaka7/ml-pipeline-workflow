@@ -68,7 +68,7 @@ def start():
     pipeline_config_path, is_rerun, run_id, *_ = parse_command_line_args()
     
     # set up logger
-
+    
     # set up Pipeline and get step configuration to run
     pipeline_config=parse_yaml_config(pipeline_config_path)
     pipeline = Pipeline(pipeline_config , is_rerun=is_rerun, run_id=run_id)
@@ -79,14 +79,13 @@ def start():
     results = dict()
     step_references = steps_to_execute['step_reference']
 
-    # TODO manage rerun here, call pipeline class with rerun argumnent
-    
     # TODO take the parallel order instead of linear oreder
     # Running linearly
     for step_name in steps_to_execute['linear_order']:
            
             # worspace for each steps
             step_workspace = os.path.join(pipeline.run_workspace, step_name)
+
             create_workspace_folder(step_workspace, delete_if_exist = True)
             
             step_ref = step_references[step_name]
@@ -98,6 +97,11 @@ def start():
             step_func = step_ref['step_module']
 
             results[step_name] =  execute_step(step_func, step_ref)
+            
+            # TODO 
+            # create a new metadata, detele the files here for new run, if any exist
+            # add to step  metadata.yaml
+
 
 
     logger.info("Ending run")
