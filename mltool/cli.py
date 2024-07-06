@@ -10,9 +10,12 @@ from mltool.utils import parse_command_line_args,parse_yaml_config, create_works
 
 #TODO Generic steps: read from dropzone, write to dropzone, read / write to db tables/ S3
 #TODO parallel processing
+
 #TODO add a rerun capabilities
 #TODO Mlflow integration in traning session
+
 #TODO add capability to import steps and execute a pipeline 
+
 #TODO Add metadata to workspace, make workspace to read all the inputs in the filestate, rather than returning
 ##### all the returns are saved as a file in file space and recorded to metadata as returns.
 
@@ -84,33 +87,17 @@ def start():
     # Running linearly
     for step_name in steps_to_execute['linear_order']:
            
-            # worspace for each steps
-            step_workspace = os.path.join(pipeline.run_workspace, step_name)
-
-            create_workspace_folder(step_workspace, delete_if_exist = True)
-            
             step_ref = step_references[step_name]
-
-            step_ref['workspace'] = step_workspace
-            
 
             if results:
                 step_ref['inputs'] = [results[_sn][0] for _sn in step_ref['depends']] 
-                # step_ref['inputs_metadata'] = {_sn: results[_sn][1] for _sn in step_ref['depends']}
-                step_ref['inputs_workspace'] =  { _sn: results[_sn][2] for _sn in step_ref['depends']}
-
+                
             # TODO not to pass step_moudule inside the config
             step_func = step_ref['step_module']
 
             results[step_name] =  execute_step(step_func, step_ref)
             
-            # TODO 
-            # create a new metadata, detele the files here for new run, if any exist
-            # add to step  metadata.yaml
-
-
-
-    logger.info("Ending run")
+    logger.info(f"Ending run : {pipeline.run_id}" )
         
     
 if __name__ == '__main__':

@@ -28,6 +28,7 @@ class AddOne(Step):
 
         self.logger.info(one_added)
         self.logger.info(len(one_added))
+        self.metadata["step_name"] = self.name
         self.metadata["length"] = len(one_added)
         for i in range(5): 
             self.logger.info(f"{self.name}: {i}")

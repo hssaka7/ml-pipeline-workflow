@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import wraps
 
-from mltool.utils import write_file, parse_yaml_config
+from mltool.utils import write_file, parse_yaml_config, create_workspace_folder
 from mltool.yaml_handler import YamlCRUD
 
 # step abstractions with decorators for functional programming 
@@ -28,36 +28,31 @@ class Step(ABC):
         self.workspace = kwargs['workspace']
         self.name = kwargs['name']
         self.depends = kwargs['depends']
-      
-        # current step metadata 
-        self.metadata = dict()
+        self.is_fresh_run = kwargs.get('fresh_run', True)
+        self.config = kwargs
 
-        # self.inputs_metadata = kwargs.get('inputs_metadata',[])
-        # maybe on reruns delete the metadata and let the code run,
+        # TODO maybe on reruns delete the metadata and let the code run,
         # which should run like the rerun when the metadata is not there. 
         # when the metadata is there. it can skip the fresh run during the rerun.
         
-        self.fresh_run = kwargs.get('fresh_run', True)
+        self.inputs_workspace = kwargs.get('inputs_workspace', dict())
         
+        # current step metadata placeholder
+        self.metadata = dict()
+
         # placeholder for the outputs and metadata form steps on depends
         self.inputs = kwargs.get('inputs', [])
         self.inputs_metadata = []
 
-       
-        self.config = kwargs
-
         
-        if self.fresh_run:
-            self.set_inputs(kwargs.get('inputs_workspace', dict()))
-
-   
-    def set_inputs ( self, previous_step_paths):
+        
+    def set_inputs ( self):
  
         if self.depends:
             
             for _prev_step in self.depends:
                 
-                _prev_step_metadata_path = os.path.join(previous_step_paths[_prev_step], "_metadata.yaml")
+                _prev_step_metadata_path = os.path.join(self.inputs_workspace[_prev_step], "_metadata.yaml")
                 _prev_step_metadata = parse_yaml_config(_prev_step_metadata_path)
                 
                 self.inputs_metadata.append(_prev_step_metadata)
@@ -67,7 +62,9 @@ class Step(ABC):
 
             # all the files saved in the folder will be used as a input?? 
 
-
+    def set_workspace(self):
+        create_workspace_folder(self.workspace, delete_if_exist=False)
+        
     def save_metadata(self):
         yaml_obj = YamlCRUD(os.path.join(self.workspace,'_metadata.yaml'))
         yaml_obj.create_data(self.metadata)
@@ -77,12 +74,14 @@ class Step(ABC):
         
         # if rerun then, delete if any thing exists in the workfolder. 
         # if rerun is False then dont execute the step
-
-        if not self.fresh_run:
+        
+        if not self.is_fresh_run:
             # do not exececute.
             return None
 
         try:
+            self.set_inputs()
+            self.set_workspace()
             result = self.run()
             self.metadata["success"] = True
             self.save_metadata()

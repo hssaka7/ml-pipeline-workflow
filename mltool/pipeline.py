@@ -10,16 +10,15 @@ from mltool.utils import create_workspace_folder
 
 
 class Pipeline:
+    
     def __init__(self, config_file, is_rerun=False, run_id = None):
 
-        
         self.logger = logging.getLogger(__name__)
         self.pipeline_name = config_file['pipeline_name']
         self.steps_list = config_file['steps']
         
         self.is_rerun = is_rerun
-        self.run_workspace = None
-
+        
         if self.is_rerun:
             self.run_id = run_id
             self.logger.info(f" Rerunning pipleline: {self.pipeline_name} with id : {self.run_id}")
@@ -30,7 +29,9 @@ class Pipeline:
             self.run_id = uuid.uuid4() 
             self.logger.info(f"\n Creating pipeline: {self.pipeline_name}  with id {self.run_id}")
         
-        self._create_worspace()
+        self.run_workspace = self._create_worspace()
+        
+        
         self.ordered_steps_config = dict()
         self._create_steps_execution_order()
 
@@ -46,8 +47,10 @@ class Pipeline:
         create_workspace_folder(pipeline_workspace_path, delete_if_exist=False)
         
         # folder with run_id inside the pipleline name
-        self.run_workspace = os.path.join(pipeline_workspace_path, str(self.run_id))
-        create_workspace_folder(self.run_workspace, delete_if_exist=False)
+        run_workspace = os.path.join(pipeline_workspace_path, str(self.run_id))
+        create_workspace_folder(run_workspace, delete_if_exist=False)
+
+        return run_workspace
 
 
 
@@ -57,7 +60,7 @@ class Pipeline:
 
         self.logger.info(f"Creating execution order for steps in {self.pipeline_name}")
         
-        dm = DependencyManager(self.steps_list)
+        dm = DependencyManager(self.steps_list, self.run_workspace)
         steps_reference, parallel_order, linear_order = dm.get_execution_order()
         
         execution_order = {

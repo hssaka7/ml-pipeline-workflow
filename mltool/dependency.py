@@ -13,9 +13,11 @@ from importlib import import_module
 
 class DependencyManager():
     
-    def __init__(self, step_list):
+    def __init__(self, step_list, workspace_path):
+        
         self.logger = logging.getLogger(__name__)
         self.steps = step_list
+        self.workspace_path = workspace_path
 
         self.parallel_execution_order = []
         self.linear_execution_order = []
@@ -39,10 +41,7 @@ class DependencyManager():
         # self._draw_dependency_graph2()
 
         self.logger.info("execution order created successfully")
-
-        
-    
-        
+      
     
     def get_execution_order(self):
         
@@ -72,12 +71,17 @@ class DependencyManager():
 
         mod = import_module(f"{_folder}.{_file}") 
         mod = getattr(mod,_step)
-                
+        
+        step["workspace"] = os.path.join(self.workspace_path, step['name'])
         step["step_module"] = mod
+
+        step["inputs_workspace"] = { _n : os.path.join(self.workspace_path, _n) for _n in step['depends']}
+        
         # set rerun here
         step["is_rerun"] = step.get("rerun", False)
         return step
         
+    
     def _create_dependency_graph(self):
 
         for step in self.steps:
@@ -86,9 +90,8 @@ class DependencyManager():
 
             #attaching a step module
             self.steps_config[name] = self._attach_step(step)
-            
             for dependency in step['depends']:
-
+                
                 self.graph[dependency].append(name)
                 self.degree[name] += 1
 
