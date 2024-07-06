@@ -17,7 +17,7 @@ from mltool.utils import parse_command_line_args,parse_yaml_config, create_works
 ##### all the returns are saved as a file in file space and recorded to metadata as returns.
 
 
-# CICID
+# CICD
 #TODO seperate pipeline completely. Pipeline should not be inside the package module
 #TODO docker file
 #TODO add test cases
@@ -50,10 +50,11 @@ def execute_step(step_func,config):
             result = step_func(**config)
         else:
             obj = step_func(**config)
-            result = obj.run()
+            result , metadata = obj.execute()
+            workspace  = obj.workspace
         
         # Create a medata file, if exist, update it with run = successfull, otherwise error message
-        return result
+        return result, metadata, workspace
     
     except Exception as e:
         logger.error(f"Error executing step '{step_name}': {e}")
@@ -91,8 +92,13 @@ def start():
             step_ref = step_references[step_name]
 
             step_ref['workspace'] = step_workspace
-            step_ref['inputs'] = [results[_sn] for _sn in step_ref['depends']] 
             
+
+            if results:
+                step_ref['inputs'] = [results[_sn][0] for _sn in step_ref['depends']] 
+                # step_ref['inputs_metadata'] = {_sn: results[_sn][1] for _sn in step_ref['depends']}
+                step_ref['inputs_workspace'] =  { _sn: results[_sn][2] for _sn in step_ref['depends']}
+
             # TODO not to pass step_moudule inside the config
             step_func = step_ref['step_module']
 

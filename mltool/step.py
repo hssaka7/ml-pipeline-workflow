@@ -1,12 +1,12 @@
-import json
-import logging 
+import logging
 import os
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from mltool.utils import write_file
-
 from functools import wraps
+
+from mltool.utils import write_file, parse_yaml_config
+from mltool.yaml_handler import YamlCRUD
 
 # step abstractions with decorators for functional programming 
 def step_function(func):
@@ -28,34 +28,72 @@ class Step(ABC):
         self.workspace = kwargs['workspace']
         self.name = kwargs['name']
         self.depends = kwargs['depends']
-        self.config = kwargs
-        self.inputs = kwargs['inputs']
-
+      
+        # current step metadata 
         self.metadata = dict()
-        self.rerun = kwargs.get('rerun', False)
 
+        # self.inputs_metadata = kwargs.get('inputs_metadata',[])
+        # maybe on reruns delete the metadata and let the code run,
+        # which should run like the rerun when the metadata is not there. 
+        # when the metadata is there. it can skip the fresh run during the rerun.
+        
+        self.fresh_run = kwargs.get('fresh_run', True)
+        
+        # placeholder for the outputs and metadata form steps on depends
+        self.inputs = kwargs.get('inputs', [])
+        self.inputs_metadata = []
 
-    def set_inputs ( self, inputs = []):
-        # step input workspace
-        # get the input from metadata, and the files in the filestate
+       
+        self.config = kwargs
 
         
-        self.inputs = inputs
+        if self.fresh_run:
+            self.set_inputs(kwargs.get('inputs_workspace', dict()))
+
+   
+    def set_inputs ( self, previous_step_paths):
+ 
+        if self.depends:
+            
+            for _prev_step in self.depends:
+                
+                _prev_step_metadata_path = os.path.join(previous_step_paths[_prev_step], "_metadata.yaml")
+                _prev_step_metadata = parse_yaml_config(_prev_step_metadata_path)
+                
+                self.inputs_metadata.append(_prev_step_metadata)
+
+                
+                # TODO attach inputs for  here based on the value in metadata
+
+            # all the files saved in the folder will be used as a input?? 
+
+
+    def save_metadata(self):
+        yaml_obj = YamlCRUD(os.path.join(self.workspace,'_metadata.yaml'))
+        yaml_obj.create_data(self.metadata)
+
 
     def execute(self):
         
         # if rerun then, delete if any thing exists in the workfolder. 
         # if rerun is False then dont execute the step
-        _metadata = dict()
-        
+
+        if not self.fresh_run:
+            # do not exececute.
+            return None
+
         try:
             result = self.run()
-            _metadata["success"] = True
-            return result
+            self.metadata["success"] = True
+            self.save_metadata()
+
+            return result, self.metadata
         
         except Exception as e:
-            _metadata["success"] = False
-            raise 
+            self.metadata["success"] = False
+            self.metadata["error_msg"] = str(e)
+            self.save_metadata()
+            raise e
         
 
     @abstractmethod
@@ -78,7 +116,10 @@ class FileIO:
 # Each file will be a file state
 class FileState():
     
-    def __init__(self,workspace, filename, content , file_path = None, save_function = None, metadata = None):
+    def __init__(self,
+                 workspace,
+                 filename,
+                 content , file_path = None, save_function = None, metadata = None):
 
         
         if not bool(file_path):

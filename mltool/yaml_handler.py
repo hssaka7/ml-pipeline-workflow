@@ -5,9 +5,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 class YamlCRUD:
-    def __init__(self, file_path='data.yaml'):
+    def __init__(self, file_path='_metadata.yaml'):
+        
         self.file_path = file_path
-
+        
     def create_data(self, data):
         try:
             with open(self.file_path, 'w') as file:

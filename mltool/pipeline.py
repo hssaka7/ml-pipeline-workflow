@@ -16,8 +16,9 @@ class Pipeline:
         self.logger = logging.getLogger(__name__)
         self.pipeline_name = config_file['pipeline_name']
         self.steps_list = config_file['steps']
+        
         self.is_rerun = is_rerun
-
+        self.run_workspace = None
 
         if self.is_rerun:
             self.run_id = run_id
@@ -28,12 +29,9 @@ class Pipeline:
         else:   
             self.run_id = uuid.uuid4() 
             self.logger.info(f"\n Creating pipeline: {self.pipeline_name}  with id {self.run_id}")
-
         
-        self.run_workspace = None
-        self.ordered_steps_config = dict()
-
         self._create_worspace()
+        self.ordered_steps_config = dict()
         self._create_steps_execution_order()
 
         self.logger.info(f"Pipeline: {self.pipeline_name} created successfully with run id: {self.run_id}")
