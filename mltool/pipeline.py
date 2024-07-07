@@ -31,7 +31,7 @@ class Pipeline:
         
         self.run_workspace = self._create_worspace()
         
-        
+
         self.ordered_steps_config = dict()
         self._create_steps_execution_order()
 
@@ -51,8 +51,6 @@ class Pipeline:
         create_workspace_folder(run_workspace, delete_if_exist=False)
 
         return run_workspace
-
-
 
 
     # create the linear and parallel execution and attach the step module 

@@ -89,10 +89,11 @@ def start():
            
             step_ref = step_references[step_name]
 
-            if results:
-                step_ref['inputs'] = [results[_sn][0] for _sn in step_ref['depends']] 
-                
+            # if results:
+            #     step_ref['inputs'] = [results[_sn][0] for _sn in step_ref['depends']] 
+
             # TODO not to pass step_moudule inside the config
+            
             step_func = step_ref['step_module']
 
             results[step_name] =  execute_step(step_func, step_ref)
