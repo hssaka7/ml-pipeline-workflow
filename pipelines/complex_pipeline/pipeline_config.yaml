@@ -32,6 +32,7 @@ steps:
 
   - name: step8
     class_name: complex_pipeline.steps.random.AddOne
+    rerun: True
     depends: [step5, step6]
 
   - name: step9

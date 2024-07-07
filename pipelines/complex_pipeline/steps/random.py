@@ -24,7 +24,7 @@ class GetRandomNumbers(Step):
 class AddOne(Step):
     def run(self):
         self.logger = logging.getLogger(self.name) 
-        one_added = [round_to_two(rn+1) for f in self.inputs for rn in json.load(f.open())]
+        one_added = [round_to_two(rn+1) for f in self.inputs[0] for rn in json.load(f.open())]
 
         self.logger.info(one_added)
         self.logger.info(len(one_added))

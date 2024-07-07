@@ -8,6 +8,7 @@ from functools import wraps
 from mltool.utils import write_file, parse_yaml_config, create_workspace_folder
 from mltool.yaml_handler import YamlCRUD
 
+
 # step abstractions with decorators for functional programming 
 def step_function(func):
     @wraps(func)
@@ -70,10 +71,7 @@ class Step(ABC):
                                      ]
                 
                 self.inputs.append(_prev_step_output)
-                
 
-    def set_workspace(self):
-        create_workspace_folder(self.workspace, delete_if_exist=False)
         
     def save_metadata(self):
         yaml_obj = YamlCRUD(os.path.join(self.workspace,'_metadata.yaml'))
@@ -82,16 +80,18 @@ class Step(ABC):
 
     def execute(self):
         
-        # if rerun then, delete if any thing exists in the workfolder. 
+        # TODO if rerun then, delete if any thing exists in the workfolder. 
         # if rerun is False then dont execute the step
         
+        # TODO nned to do this outside the step, on pipeline executor. 
+        # if it does not need fresh run then the step should not be initialize
         if not self.is_fresh_run:
-            # do not exececute.
-            return None
+            # do not execute.
+            return None,None
 
         try:
             self._load_inputs()
-            self.set_workspace()
+            create_workspace_folder(self.workspace, delete_if_exist=False)
             result = self.run()
             self.metadata["success"] = True
             self.save_metadata()
@@ -133,15 +133,21 @@ class FileState():
                  save_function = None,
                  metadata = None):
 
+        self.workspace = workspace
+        self.filename = filename
+        self.content = content
+        self.file_path = file_path
+        self.save_function = save_function
+
+        if self.file_path:
+            self.file_path = self.file_path
         
-        if not bool(file_path):
+        elif self.workspace and self.filename and self.content:
             _temp_file_path = os.path.join(workspace,filename)
             self.file_path = self._create_file_path(_temp_file_path, content,save_function)
- 
-        # TODO check file path must be a file inside the workspace
-        # TODO file path must exist
+
         else:
-            self.file_path = file_path
+            raise("Either need filepath or (workspace, filename and content) for file creation")
     
     def _create_file_path(self, file_path, content, save_function):
         
@@ -149,8 +155,9 @@ class FileState():
         if not bool(content):
             raise Exception(" Must provide (string I/O file content) or (object content and save function)")
         
+        # TODO need to work more on the save function
         if  bool(save_function):
-            save_function(content)
+            save_function(content, file_path)
         
         else:
              write_file(file_path, content)

@@ -67,7 +67,6 @@ def execute_step(step_func,config):
 def start():
     logger.info("Starting ...")
 
-
     # read command line arguments
     pipeline_config_path, is_rerun, run_id, *_ = parse_command_line_args()
     

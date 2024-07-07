@@ -13,11 +13,12 @@ from importlib import import_module
 
 class DependencyManager():
     
-    def __init__(self, step_list, workspace_path):
+    def __init__(self, step_list, workspace_path, is_rerun = False):
         
         self.logger = logging.getLogger(__name__)
         self.steps = step_list
         self.workspace_path = workspace_path
+        self.is_rerun = is_rerun
 
         self.parallel_execution_order = []
         self.linear_execution_order = []
@@ -77,8 +78,9 @@ class DependencyManager():
 
         step["inputs_workspace"] = { _n : os.path.join(self.workspace_path, _n) for _n in step['depends']}
         
-        # set rerun here
-        step["is_rerun"] = step.get("rerun", False)
+        # TODO set rerun here, need to set the rerun for all the steps dependent on it. 
+        step["fresh_run"] = step.get("rerun", False) if self.is_rerun else True
+        
         return step
         
     

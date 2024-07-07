@@ -38,11 +38,11 @@ class Pipeline:
         self.logger.info(f"Pipeline: {self.pipeline_name} created successfully with run id: {self.run_id}")
 
     def _create_worspace(self):
-         # folder with pipeline name inside root_workspace
-
-        self.logger.info(f"Setting up workspace for : {self.pipeline_name} and run id: {self.run_id}")
         
+        self.logger.info(f"Setting up workspace for : {self.pipeline_name} and run id: {self.run_id}")
         root_workspace = os.getenv('WORKSPACE')
+
+        # folder with pipeline name inside root_workspace
         pipeline_workspace_path = os.path.join(root_workspace, self.pipeline_name)
         create_workspace_folder(pipeline_workspace_path, delete_if_exist=False)
         
@@ -58,7 +58,7 @@ class Pipeline:
 
         self.logger.info(f"Creating execution order for steps in {self.pipeline_name}")
         
-        dm = DependencyManager(self.steps_list, self.run_workspace)
+        dm = DependencyManager(self.steps_list, self.run_workspace, is_rerun=self.is_rerun)
         steps_reference, parallel_order, linear_order = dm.get_execution_order()
         
         execution_order = {
