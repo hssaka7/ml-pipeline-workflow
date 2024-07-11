@@ -26,10 +26,18 @@ class DependencyManager():
         self.steps_config = dict()
         self.graph = defaultdict(list)
         self.degree = defaultdict(int)
+        self.steps_to_rerun = []
 
         self._create_execution_order()
 
-        
+    
+    def _filter_steps_to_rerun(self):
+        if not self.is_rerun:
+            # return all the steps
+            pass
+        else:
+            # return the steps that needs rerun
+            pass
     def _create_execution_order(self):
         
         self.logger.info("Managing dependencies and creating execution order .. ")

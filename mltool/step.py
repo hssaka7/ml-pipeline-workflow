@@ -50,30 +50,28 @@ class Step(ABC):
    
     def _load_inputs ( self):
         """Loads the inputs for the curtent step based on """
- 
-        if self.depends:
+        
+        for _prev_step in self.depends:
+
+            _prev_step_workspace = self.inputs_workspace[_prev_step]
             
-            for _prev_step in self.depends:
+            # load metadata
+            _prev_step_metadata_path = os.path.join(_prev_step_workspace, "_metadata.yaml")
+            _prev_step_metadata = parse_yaml_config(_prev_step_metadata_path)
+            self.inputs_metadata.append(_prev_step_metadata)
 
-                _prev_step_workspace = self.inputs_workspace[_prev_step]
-                
-                # load metadata
-                _prev_step_metadata_path = os.path.join(_prev_step_workspace, "_metadata.yaml")
-                _prev_step_metadata = parse_yaml_config(_prev_step_metadata_path)
-                self.inputs_metadata.append(_prev_step_metadata)
-
-                # load inputs
-                #  TODO attach inputs for  here based on the value in metadata
-                _prev_step_output = [FileState(file_path=os.path.join(_prev_step_workspace, f)) 
-                                     for f in os.listdir(_prev_step_workspace)
-                                     if os.path.isfile(os.path.join(_prev_step_workspace, f))
-                                     and f!='_metadata.yaml'
-                                     ]
-                
-                self.inputs.append(_prev_step_output)
+            # load inputs
+            #  TODO attach inputs for  here based on the value in metadata
+            _prev_step_output = [FileState(file_path=os.path.join(_prev_step_workspace, f)) 
+                                    for f in os.listdir(_prev_step_workspace)
+                                    if os.path.isfile(os.path.join(_prev_step_workspace, f))
+                                    and f!='_metadata.yaml'
+                                    ]
+            
+            self.inputs.append(_prev_step_output)
 
         
-    def save_metadata(self):
+    def _save_metadata(self):
         yaml_obj = YamlCRUD(os.path.join(self.workspace,'_metadata.yaml'))
         yaml_obj.create_data(self.metadata)
 
@@ -83,7 +81,7 @@ class Step(ABC):
         # TODO if rerun then, delete if any thing exists in the workfolder. 
         # if rerun is False then dont execute the step
         
-        # TODO nned to do this outside the step, on pipeline executor. 
+        # TODO need to do this outside the step, on pipeline executor. 
         # if it does not need fresh run then the step should not be initialize
         if not self.is_fresh_run:
             # do not execute.
@@ -94,14 +92,14 @@ class Step(ABC):
             create_workspace_folder(self.workspace, delete_if_exist=False)
             result = self.run()
             self.metadata["success"] = True
-            self.save_metadata()
+            self._save_metadata()
 
             return result, self.metadata
         
         except Exception as e:
             self.metadata["success"] = False
             self.metadata["error_msg"] = str(e)
-            self.save_metadata()
+            self._save_metadata()
             raise e
         
 
