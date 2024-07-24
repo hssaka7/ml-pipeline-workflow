@@ -67,8 +67,11 @@ class Step(ABC):
                                     if os.path.isfile(os.path.join(_prev_step_workspace, f))
                                     and f!='_metadata.yaml'
                                     ]
+            _prev_step_output_dict = {
+                fs.filename: fs for fs in _prev_step_output
+            }
             
-            self.inputs.append(_prev_step_output)
+            self.inputs.append(_prev_step_output_dict)
 
         
     def _save_metadata(self):
@@ -133,14 +136,14 @@ class FileState():
 
         self.workspace = workspace
         self.filename = filename
-        self.content = content
-        self.file_path = file_path
-        self.save_function = save_function
-
-        if self.file_path:
-            self.file_path = self.file_path
         
-        elif self.workspace and self.filename and self.content:
+        
+        if file_path:
+            self.file_path = file_path
+            base_path, filename = os.path.split(self.file_path)
+            self.filename = filename
+        
+        elif self.workspace and self.filename and content:
             _temp_file_path = os.path.join(workspace,filename)
             self.file_path = self._create_file_path(_temp_file_path, content,save_function)
 
